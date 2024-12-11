@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/styles.css">
+    <title>Obesity Levels</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">Ước tính mức độ béo phì</h1>
+        </div>
+
+        <form action="/predict" method="post" id="prediction-form">
+            <div class="form-group">
+                <label id="name-label" for="name">Họ và tên</label>
+                <input type="text"  name="name"  id="name"  class="form-control"  placeholder="Nhập tên của bạn" required>
+            </div>
+            <div class="form-group">
+                <label id="email-label" for="email">Email</label>
+                <input type="email" , name="email" , id="email" , class="form-control" 
+                    placeholder="Nhập email của bạn (không bắt buộc)">
+            </div>
+            <div class="form-group">
+                <label id="age-label" for="age">Tuổi</label>
+                <input type="number" name="age" id="age" min="16" max="64" required class="form-control">
+            </div>
+            <div class="form-group">
+                <p>Giới tính</p>
+                <label>
+                    <input name="user-gender"  type="radio"  value="Male"  class="input-radio" required>
+                    Nam
+                </label>
+                <label>
+                    <input name="user-gender" type="radio" class="input-radio"  value="Female" required>
+                    Nữ
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="weight" , id="weight-label">Cân nặng (Kg)</label>
+                <input type="number" name="weight" id="weight" class="form-control" min="0">
+            </div>
+            <div class="form-group">
+                <label for="height" , id="height-label">Chiều cao (Cm)</label>
+                <input type="number" name="height" id="height" class="form-control" min="0">
+            </div>
+
+            
+
+            <p>Thói quen</p>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="prefer" class="input-checkbox" , value="SWO">
+                    Gia đình bạn có người thừa cân.
+                </label>
+                <label>
+                    <input type="checkbox" name="prefer" class="input-checkbox" , value="FAVC">
+                    Bạn thường xuyên ăn thức ăn nhiều calo.
+                </label>
+                <label>
+                    <input type="checkbox" name="prefer" class="input-checkbox" , value="SCC">
+                    Bạn theo dõi lượng calo mình ăn hàng ngày.
+                </label>
+                <label>
+                    <input type="checkbox" name="prefer" class="input-checkbox" , value="SMOKE">
+                    Bạn có hút thuốc.
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="water" id="water-label">Bạn uống bao nhiêu nước mỗi ngày(lít)?</label>
+                <input type="number" name="water" id="water" class="form-control" min="0" class="input-checkbox">
+            </div>
+
+            <div class="form-group">
+                <label for="NCP" id="NCP-label">Bạn ăn bao nhiêu bữa chính mỗi ngày?</label>
+                <input type="number" name="NCP" id="NCP" class="form-control" min="0" class="input-checkbox">
+            </div>
+
+            <div class="form-group">
+                <p>Bạn có thường xuyên ăn rau không?</p>
+                <select name="FCVC" id="FCVC" class="form-control" required>
+                    <option disabled selected value>Lựa chọn</option>
+                    <option type="number" value="1">Không</option>
+                    <option type="number" value="2">Thỉnh thoảng</option>
+                    <option type="number" value="3">Luôn luôn</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <p>Bạn có ăn bất kì thứ gì giữa các bữa không?</p>
+                <select name="CAEC" id="CAEC" class="form-control" required>
+                    <option disabled selected value>Lựa chọn</option>
+                    <option value="Never">Không</option>
+                    <option value="Sometimes">Thỉnh thoảng</option>
+                    <option value="Frequently">Thường xuyên</option>
+                    <option value="Always">Luôn luôn</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <p>Bạn có hay uống rượu không?</p>
+                <select name="CALC" id="CALC" class="form-control" required>
+                    <option disabled selected value>Lựa chọn</option>
+                    <option value="Never">Không</option>
+                    <option value="Sometimes">Thỉnh thoảng</option>
+                    <option value="Frequently">Thường xuyên</option>
+                    <option value="Always">Luôn luôn</option>
+                </select>
+            </div>
+
+            <p>Thể chất</p>
+            <div class="form-group">
+                <label for="TUE" id="TUE-label">Thời gian sử dụng thiết bị điện tử?</label>
+                <input type="number" name="TUE" id="TUE" class="form-control" placeholder="Ví dụ: 3 giờ/ngày, ...">
+            </div>
+
+            <div class="form-group">
+                <label for="FAF" id="FAF-label">Hoạt động thể chất của bạn trong tuần?</label>
+                <input type="number" name="FAF" id="FAF" class="form-control" placeholder="Ví dụ: 2 ngày/tuần, ...">
+            </div>
+
+            <div class="form-group">
+                <p>Bạn thường sử dụng phương tiện đi lại nào?</p>
+                <select name="MTRANS" id="MTRANS" class="form-control" required>
+                    <option disabled selected value>Lựa chọn</option>
+                    <option value="Automobile">Ô tô</option>
+                    <option value="Motorbike">Xe máy</option>
+                    <option value="Bike">Xe đạp</option>
+                    <option value="Public_Transportation">Phương tiện công cộng</option>
+                    <option value="Walking">Đi bộ</option>
+                </select>
+            </div>
+            <div class="form-group div-submit">
+                <button type="submit" class="submit-button" id="submit">
+                    Kiểm tra
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Popup modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <button type="button" class="btn-close">&times;</button>
+            <div class="modal-header">
+                Kết quả dự đoán
+            </div>
+            <div class="modal-body">
+                <p id="result-text"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+
+</html>
