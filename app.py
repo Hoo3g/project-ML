@@ -7,8 +7,12 @@ from sklearn.decomposition import PCA
 app = Flask(__name__)
 
 # Tải mô hình đã huấn luyện
-MODEL_PATH = "model/MLP.pkl"  # Thay bằng đường dẫn đến file mô hình
+MODEL_PATH = "model/SVM1.pkl"  # Thay bằng đường dẫn đến file mô hình
+COLUMNS_PATH = "model/columns.pkl"
+
 model = joblib.load(MODEL_PATH)
+columns = joblib.load(COLUMNS_PATH)
+
 
 @app.route('/')
 def home():
@@ -19,7 +23,6 @@ def predict():
     # Lấy dữ liệu từ form
     data = request.form.to_dict()
 
-    # Chuyển đổi dữ liệu vào đúng định dạng DataFrame
     input_data = pd.DataFrame({
         "Gender": [data.get("user-gender")],  # Nam hoặc Nữ
         "Age": [int(data.get("age"))],  # Dữ liệu tuổi (số)
@@ -55,25 +58,23 @@ def predict():
 
     continuous_columns = ['Age', 'Height', 'Weight', 'NCP', 'CH2O', 'FAF', 'TUE', 'FCVC']
     print(data)
-  # Khởi tạo bộ chuẩn hóa
+  
     scaler = StandardScaler()
 
     # Chuẩn hóa các trường liên tục
-    input_data[continuous_columns] = scaler.fit_transform(input_data[continuous_columns])
+    # input_data[continuous_columns] = scaler.fit_transform(input_data[continuous_columns])
     X = input_data
     X = pd.get_dummies(X, columns=['Gender', 'CAEC', 'CALC', 'MTRANS'])
     X = X.replace({'yes': 1, 'no': 0})
     X = X.replace({True: 1, False: 0})
-    # print(X)
-    # pca = PCA(n_components=14)
-    # X_pca = pca.fit_transform(X)
 
-    # Tiến hành dự đoán và trả về kết quả (giả sử có mô hình đã huấn luyện)
-    prediction = model.predict(X)  # model là mô hình đã huấn luyện trước đó
+    X = X.reindex(columns=columns, fill_value=0)
+    print(X)
+
+    
+    prediction = model.predict(X)
     result = prediction[0]
-    print(result)
-    # Trả kết quả dự đoán về giao diện người dùng
-     # Trả kết quả dưới dạng JSON
+
     return jsonify({"result": f"Ước tính mức độ béo phì: {result}"})
     
 if __name__ == '__main__':
