@@ -73,7 +73,6 @@ def predict():
 
     result = result_mapping.get(result, "Unknown")
     
-    
     return jsonify({"result": f"{result}"})
     
 import os
