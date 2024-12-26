@@ -1,68 +1,55 @@
 from flask import Flask, request, jsonify, render_template
-import joblib  # Để tải mô hình đã lưu
+import joblib
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 
 app = Flask(__name__)
 
-# Tải mô hình đã huấn luyện
-MODEL_PATH = "model/SVM1.pkl"  # Thay bằng đường dẫn đến file mô hình
-COLUMNS_PATH = "model/columns.pkl"
+MODEL_PATH = "pr_ML/model/SVM.pkl"
+COLUMNS_PATH = "pr_ML/model/columns.pkl"
 
 model = joblib.load(MODEL_PATH)
 columns = joblib.load(COLUMNS_PATH)
 
-
 @app.route('/')
 def home():
-    return render_template("index.html")  # Tệp HTML của bạn được đặt trong thư mục "templates"
+    return render_template("index.html")
 
 @app.route('/predict', methods=['POST'])
+
 def predict():
-    # Lấy dữ liệu từ form
     data = request.form.to_dict()
 
     input_data = pd.DataFrame({
-        "Gender": [data.get("user-gender")],  # Nam hoặc Nữ
-        "Age": [int(data.get("age"))],  # Dữ liệu tuổi (số)
-        "Height": [float(data.get("height")) / 100],  # Chuyển chiều cao từ cm sang m
-        "Weight": [float(data.get("weight"))],  # Cân nặng (kg)
+        "Gender": [data.get("user-gender")],  
+        "Age": [int(data.get("age"))],  
+        "Height": [float(data.get("height")) / 100], 
+        "Weight": [float(data.get("weight"))], 
         
-        # Các trường phân loại nhị phân: 'Có' hoặc 'Không'
         "family_history_with_overweight": ["yes" if "SWO" in request.form.getlist("prefer") else "no"], 
         "FAVC": ["yes" if "FAVC" in request.form.getlist("prefer") else "no"], 
         "SMOKE": ["yes" if "SMOKE" in request.form.getlist("prefer") else "no"],
         "SCC": ["yes" if "SCC" in request.form.getlist("prefer") else "no"],
 
-        # FCVC, NCP, CAEC là các trường phân loại có giá trị rời rạc
-        "FCVC": [data.get("FCVC")],  # 'Không bao giờ', 'Thỉnh thoảng', 'Luôn luôn'
-        "NCP": [data.get("NCP")],  # 'Khoảng 1-2', '3', 'Nhiều hơn 3'
-        "CAEC": [data.get("CAEC")],  # 'Không', 'Thỉnh thoảng', 'Thường xuyên', 'Luôn luôn'
+        "FCVC": [data.get("FCVC")],
+        "NCP": [data.get("NCP")],
+        "CAEC": [data.get("CAEC")], 
 
-        # CH2O: Sử dụng giá trị số thực cho lượng nước tiêu thụ
-        "CH2O": [data.get("water")],  # 'Ít hơn 1 lít', '1-2 lít', 'Nhiều hơn 2 lít'
+        "CH2O": [data.get("water")],  
+        #Hoạt động thể chất
+        "FAF": [data.get("FAF")],
 
-        # FAF: Hoạt động thể chất
-        "FAF": [data.get("FAF")],  # '0', '1-2 ngày', '2-4 ngày', 'Nhiều hơn'
+        #Thời gian sử dụng thiết bị điện tử
+        "TUE": [data.get("TUE")],
 
-        # TUE: Thời gian sử dụng thiết bị điện tử
-        "TUE": [data.get("TUE")],  # '0-2 giờ', '3-5 giờ', 'Nhiều hơn 5 giờ'
+        #Uống rượu
+        "CALC": [data.get("CALC")],  
 
-        # CALC: Uống rượu
-        "CALC": [data.get("CALC")],  # 'Không', 'Thỉnh thoảng', 'Thường xuyên', 'Luôn luôn'
-
-        # MTRANS: Phương tiện di chuyển
-        "MTRANS": [data.get("MTRANS")]  # 'Ôtô', 'Xe máy', 'Xe đạp', 'Phương tiện công cộng', 'Đi bộ'
+        #Phương tiện di chuyển
+        "MTRANS": [data.get("MTRANS")]
     })
 
-    continuous_columns = ['Age', 'Height', 'Weight', 'NCP', 'CH2O', 'FAF', 'TUE', 'FCVC']
     print(data)
   
-    scaler = StandardScaler()
-
-    # Chuẩn hóa các trường liên tục
-    # input_data[continuous_columns] = scaler.fit_transform(input_data[continuous_columns])
     X = input_data
     X = pd.get_dummies(X, columns=['Gender', 'CAEC', 'CALC', 'MTRANS'])
     X = X.replace({'yes': 1, 'no': 0})
@@ -71,11 +58,25 @@ def predict():
     X = X.reindex(columns=columns, fill_value=0)
     print(X)
 
+    result_mapping = {
+        0: "Thiếu cân",
+        1: "Cân nặng bình thường",
+        2: "Béo phì mức I",
+        3: "Béo phì mức II",
+        4: "Béo phì mức III",
+        5: "Thừa cân mức I",
+        6: "Thừa cân mức II"
+    }
     
     prediction = model.predict(X)
     result = prediction[0]
 
-    return jsonify({"result": f"Ước tính mức độ béo phì: {result}"})
+    result = result_mapping.get(result, "Unknown")
     
+    
+    return jsonify({"result": f"{result}"})
+    
+import os
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)

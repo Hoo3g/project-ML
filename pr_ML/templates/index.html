@@ -10,11 +10,12 @@
 
 <body>
     <div class="container">
-        <div class="header">
-            <h1 id="title">Ước tính mức độ béo phì</h1>
-        </div>
+        
 
         <form action="/predict" method="post" id="prediction-form">
+            <div class="header">
+                <h1 id="title">Dự đoán mức độ béo phì</h1>
+            </div>
             <div class="form-group">
                 <label id="name-label" for="name">Họ và tên</label>
                 <input type="text"  name="name"  id="name"  class="form-control"  placeholder="Nhập tên của bạn" required>
@@ -41,11 +42,11 @@
             </div>
             <div class="form-group">
                 <label for="weight" , id="weight-label">Cân nặng (Kg)</label>
-                <input type="number" name="weight" id="weight" class="form-control" min="0">
+                <input type="number" name="weight" id="weight" class="form-control" min="0" required>
             </div>
             <div class="form-group">
                 <label for="height" , id="height-label">Chiều cao (Cm)</label>
-                <input type="number" name="height" id="height" class="form-control" min="0">
+                <input type="number" name="height" id="height" class="form-control" min="0" required>
             </div>
 
             
@@ -71,12 +72,12 @@
             </div>
             <div class="form-group">
                 <label for="water" id="water-label">Bạn uống bao nhiêu nước mỗi ngày(lít)?</label>
-                <input type="number" name="water" id="water" class="form-control" min="0" class="input-checkbox">
+                <input type="number" step="any" name="water" id="water" class="form-control" min="0" class="input-checkbox" required>
             </div>
 
             <div class="form-group">
                 <label for="NCP" id="NCP-label">Bạn ăn bao nhiêu bữa chính mỗi ngày?</label>
-                <input type="number" name="NCP" id="NCP" class="form-control" min="0" class="input-checkbox">
+                <input type="number" name="NCP" id="NCP" class="form-control" min="0" class="input-checkbox" required>
             </div>
 
             <div class="form-group">
@@ -114,12 +115,12 @@
             <p>Thể chất</p>
             <div class="form-group">
                 <label for="TUE" id="TUE-label">Thời gian sử dụng thiết bị điện tử?</label>
-                <input type="number" name="TUE" id="TUE" class="form-control" placeholder="Ví dụ: 3 giờ/ngày, ...">
+                <input type="number" name="TUE" id="TUE" class="form-control" placeholder="Ví dụ: 3 giờ/ngày, ..." required>
             </div>
 
             <div class="form-group">
                 <label for="FAF" id="FAF-label">Hoạt động thể chất của bạn trong tuần?</label>
-                <input type="number" name="FAF" id="FAF" class="form-control" placeholder="Ví dụ: 2 ngày/tuần, ...">
+                <input type="number" name="FAF" id="FAF" class="form-control" placeholder="Ví dụ: 2 ngày/tuần, ..." required>
             </div>
 
             <div class="form-group">
@@ -141,7 +142,6 @@
         </form>
     </div>
 
-    <!-- Popup modal -->
     <div id="resultModal" class="modal">
         <div class="modal-content">
             <button type="button" class="btn-close">&times;</button>
