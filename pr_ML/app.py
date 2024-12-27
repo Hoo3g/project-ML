@@ -4,8 +4,8 @@ import pandas as pd
 
 app = Flask(__name__)
 
-MODEL_PATH = "pr_ML/model/SVM.pkl"
-COLUMNS_PATH = "pr_ML/model/columns.pkl"
+MODEL_PATH = "/model/SVM.pkl"
+COLUMNS_PATH = "/model/columns.pkl"
 
 model = joblib.load(MODEL_PATH)
 columns = joblib.load(COLUMNS_PATH)
