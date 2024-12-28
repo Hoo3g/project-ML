@@ -1,8 +1,15 @@
 from flask import Flask, request, jsonify, render_template
 import joblib
 import pandas as pd
+import logging
 
 app = Flask(__name__)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 MODEL_PATH = "model/SVM.pkl"
 COLUMNS_PATH = "model/columns.pkl"
@@ -48,7 +55,7 @@ def predict():
         "MTRANS": [data.get("MTRANS")]
     })
 
-    print(data)
+    logger.info(f"Incoming data: {data}")
   
     X = input_data
     X = pd.get_dummies(X, columns=['Gender', 'CAEC', 'CALC', 'MTRANS'])
@@ -72,7 +79,7 @@ def predict():
     result = prediction[0]
 
     result = result_mapping.get(result, "Unknown")
-    
+    logger.info(f"Prediction Result: {result_mapping.get(result, 'Unknown')}")
     return jsonify({"result": f"{result}"})
     
 import os
